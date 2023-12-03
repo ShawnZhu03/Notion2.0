@@ -1,13 +1,17 @@
 import logo from './logo.svg';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 import LoginReg from '../logInReg/LoginReg';
 
 
+
 function App() {
   return (
-    <div>
-      <LoginReg/>
-    </div>
+    <Router>
+      <div>
+        <LoginReg />
+      </div>
+    </Router>
   );
 }
 

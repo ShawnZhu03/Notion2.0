@@ -63,15 +63,12 @@
     color: grey;
     font-size: 19px;
 }
-
-.submit-container{
+.submit-container {
     display: flex;
-    gap: 30px;
-    margin: 60px auto;
+    justify-content: center; 
+    align-items: center; 
 }
-
-
-.submit{
+.submit-container button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -83,11 +80,24 @@
     font-size: 19px;
     font-weight: 700;
     cursor: pointer;
+    border: none; 
+    outline: none; 
 }
 
-.gray {
-    background: #DF826C;
+.submit-container button:hover {
+    background-color: #DF826C;
+    color: white;
+}
+
+.switch-action {
+    text-align: center;
+    margin-top: 20px;
     color: #676767;
+    cursor: pointer;
+}
+
+.switch-action:hover {
+    color: #DF826C;
 }
 
 .welcome-header {
