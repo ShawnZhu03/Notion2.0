@@ -4,6 +4,7 @@ import './LoginReg.css'
 
 import UserIcon from '../components/Assets/UserIcon.png'
 import PasswordIcon from '../components/Assets/PasswordIcon.png'
+import axios from 'axios'
 
 
 const LoginReg = () => {
@@ -33,11 +34,13 @@ const LoginReg = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:3001${endpoint}`, requestOptions);
+            const response = await fetch(`http://localhost:5001${endpoint}`, requestOptions);
             const data = await response.json();
+            console.log(response);
 
             if (response.ok) {
                 navigate('/MainPage');
+                
             } else {
                 console.error('Error:', data.message);
             }
