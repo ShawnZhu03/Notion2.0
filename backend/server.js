@@ -1,7 +1,7 @@
 //server
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const multer = require('multer'); 
+const multer = require('multer');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,10 +10,20 @@ const Folder = require('./models/folders.js');
 const File = require('./models/files.js');
 
 const port = 5001;
-const upload = multer({dest: 'uploads/'});
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Use the original file name
+  }
+});
+
+const upload = multer({ storage: storage });
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 require('dotenv').config();
 const uri = process.env.ATLAS_URI;
@@ -73,7 +83,7 @@ app.post('/login', async (req, res) => {
 //Fetch Folders Endpoint
 app.get('/MainPage', async (req, res) => {
   try {
-    const folders = await Folder.find(); 
+    const folders = await Folder.find();
     res.json(folders);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching folders' });
@@ -83,27 +93,35 @@ app.get('/MainPage', async (req, res) => {
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
-      const newFile = new File({
-          name: req.file.originalname,
-          folder: [], 
-          content: req.file.path 
-      });
-      await newFile.save();
-      res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+    const newFile = new File({
+      name: req.file.originalname, // Original name of the file
+      folder: [],
+      content: req.file.path // Path where the file is saved
+    });
+    await newFile.save();
+    res.status(200).json({ message: 'File uploaded successfully', file: newFile });
   } catch (error) {
-      res.status(500).json({ message: 'Error uploading file', error: error });
+    res.status(500).json({ message: 'Error uploading file', error: error });
   }
 });
+
 
 //List File Endpoint
 app.get('/files', async (req, res) => {
   try {
-      const files = await File.find();
-      res.status(200).json(files);
+    const files = await File.find();
+    const fileData = files.map(file => {
+      return {
+        ...file.toObject(),
+        url: `http://localhost:5001/uploads/${encodeURIComponent(file.name)}`
+      };
+    });
+    res.status(200).json(fileData);
   } catch (error) {
-      res.status(500).json({ message: 'Error fetching files', error: error });
+    res.status(500).json({ message: 'Error fetching files', error: error });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);

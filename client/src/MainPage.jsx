@@ -7,13 +7,16 @@ import './MainPage.scss';
 const MainPage = () => {
   return (
     <div className="main-page">
+      <Sidebar />
       <div className="page-body">
-        <Sidebar />
-        <FileList />
-        <FileUpload/>
+        <div className="Content">
+          <FileList />
+          <FileUpload />
+        </div>
       </div>
     </div>
   );
 }
 
 export default MainPage;
+
