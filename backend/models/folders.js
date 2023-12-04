@@ -12,13 +12,13 @@ const folderSchema = new Schema ({
     },
 
     owner: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: 'User'
+
     },
     files: [{
-        type: Schema.Types.ObjectId,
-        ref: 'File',
+        type: Schema.Types.ObjectId
     }]
 });
 

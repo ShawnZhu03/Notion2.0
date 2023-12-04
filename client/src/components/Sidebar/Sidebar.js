@@ -1,38 +1,45 @@
-import React, { useState } from 'react';
 
-function Sidebar({ folders, onFolderSelect, onAddFolder }) {
-    //Name of new folder 
+import React, { useState, useEffect } from 'react';
+
+function Sidebar({ onFolderSelect, onAddFolder }) {
+    // Name of new folder
     const [newFolderName, setNewFolderName] = useState('');
-    // current selected folder ID 
+    // Current selected folder ID
     const [selectedFolderId, setSelectedFolderId] = useState(null);
+    // Folders state
+    const [folders, setFolders] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5001/MainPage').then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
+        fetch('http://localhost:5001/MainPage', {
+            method: 'GET',
         })
+             
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setFolders(data);
             })
             .catch(error => {
                 console.error('There was an error fetching the folders:', error);
             });
-    })
+    }, []);
 
     const handleFolderClick = (folderId) => {
         setSelectedFolderId(folderId);
         onFolderSelect(folderId);
     };
 
-    //Add folders
+    // Add folders
     const handleAddFolder = (e) => {
         e.preventDefault();
 
         const newFolder = {
             folderName: newFolderName,
-            owner: '656d13647b8be20b23864689'
+            owner: '656d52bbc51ea1bc6b0b6de0'
         };
 
         fetch('http://localhost:5001/MainPage', {
@@ -51,6 +58,8 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
             .then(addedFolder => {
                 onAddFolder(addedFolder);
                 setNewFolderName('');
+                // Update folders state with the new folder
+                setFolders(prevFolders => [...prevFolders, addedFolder]);
             })
             .catch(error => {
                 console.error('There was an error adding the folder:', error);
@@ -60,6 +69,7 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
     return (
         <aside style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
             {folders.map(folder => (
+                console.log(folder),
                 <div
                     key={folder._id}
                     style={{
@@ -69,7 +79,7 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
                     }}
                     onClick={() => handleFolderClick(folder._id)}
                 >
-                    {folder.name}
+                    {folder.folderName}
                 </div>
             ))}
             <form onSubmit={handleAddFolder}>
@@ -84,6 +94,4 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
         </aside>
     );
 }
-
 export default Sidebar;
-

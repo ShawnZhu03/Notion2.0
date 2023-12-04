@@ -85,7 +85,7 @@ app.post('/login', async (req, res) => {
 });
 
 // Fetch Folders Endpoint
-app.get('/folders', async (req, res) => {
+app.get('/MainPage', async (req, res) => {
   try {
     const folders = await Folder.find(); 
     res.json(folders); 
@@ -102,6 +102,8 @@ app.post('/MainPage', async (req, res) => {
     const newFolder = new Folder({ folderName, owner});
     console.log(folderName);
     console.log(newFolder);
+    console.log(owner);
+
     await newFolder.save();
     res.status(201).json({ message: 'Folder created successfully' });
     
@@ -111,25 +113,6 @@ app.post('/MainPage', async (req, res) => {
   }
 });
 
-// Add Folder Endpoint
-app.post('/Addfolders', async (req, res) => {
-  try {
-    const { name } = req.body;
-    const existingFolder = await Folder.findOne({ name });
-
-    // Check if folder already exists
-    if (existingFolder) {
-      return res.status(400).json({ message: 'Folder with this name already exists' });
-    }
-
-    const newFolder = new Folder({ name });
-    await newFolder.save(); // Creates a new folder
-
-    res.status(201).json(newFolder); // Returns the new folder
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating folder', error: error });
-  }
-});
 
 // Fetch Files by Folder ID Endpoint
 app.get('/files', async (req, res) => {

@@ -13,7 +13,7 @@ const MainPage = () => {
 
   //fetch folder data
   useEffect(() => {
-    fetch('http://localhost:5001/folders')
+    fetch('http://localhost:5001/MainPage')
       .then(response => response.json())
       .then(data => setFolders(data))
       .catch(error => console.error('Error fetching folders:', error));
