@@ -20,7 +20,7 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
             name: newFolderName,
         };
 
-        fetch('http://localhost:5001/Addfolders', {
+        fetch('http://localhost:5001/Addfolders', { //This is either not reaching Addfolders or the backend is not doing something right!
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

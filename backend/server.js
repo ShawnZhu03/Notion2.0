@@ -123,7 +123,7 @@ app.get('/files', async (req, res) => {
       return res.status(400).json({ message: 'Folder ID is required' });
     }
 
-    const files = await File.find({ folder: folderId }); // Assuming 'folder' field in File schema stores the folder ID
+    const files = await File.find({ folder: folderId });
     res.json(files);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching files', error: error });
