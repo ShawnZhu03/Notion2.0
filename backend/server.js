@@ -1,16 +1,33 @@
 //server
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const User = require('./models/users.js');
 const Folder = require('./models/folders.js');
+const File = require('./models/files.js');
+const fs = require('fs');
+
 
 const port = 5001;
 
+//store uploaded files in uploads directory
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 require('dotenv').config();
 const uri = process.env.ATLAS_URI;
@@ -67,13 +84,14 @@ app.post('/login', async (req, res) => {
   }
 });
 
-//Fetch Folders Endpoint
-app.get('/MainPage', async (req, res) => {
+// Fetch Folders Endpoint
+app.get('/folders', async (req, res) => {
   try {
     const folders = await Folder.find(); 
-    res.json(folders);
+    res.json(folders); 
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching folders' });
+    console.error('Error fetching folders:', error);
+    res.status(500).json({ message: 'Error fetching folders', error: error });
   }
 });
 
@@ -93,6 +111,111 @@ app.post('/MainPage', async (req, res) => {
   }
 });
 
+// Add Folder Endpoint
+app.post('/Addfolders', async (req, res) => {
+  try {
+    const { name } = req.body;
+    const existingFolder = await Folder.findOne({ name });
+
+    // Check if folder already exists
+    if (existingFolder) {
+      return res.status(400).json({ message: 'Folder with this name already exists' });
+    }
+
+    const newFolder = new Folder({ name });
+    await newFolder.save(); // Creates a new folder
+
+    res.status(201).json(newFolder); // Returns the new folder
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating folder', error: error });
+  }
+});
+
+// Fetch Files by Folder ID Endpoint
+app.get('/files', async (req, res) => {
+  try {
+    const folderId = req.query.folderId;
+    if (!folderId) {
+      return res.status(400).json({ message: 'Folder ID is required' });
+    }
+
+    const files = await File.find({ folder: folderId });
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching files', error: error });
+  }
+});
+
+//File Upload Endpoint
+app.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+      // Create a new file document
+      const newFile = new File({
+          name: req.file.originalname,
+          folder: req.body.folderId,
+          content: req.file.path
+      });
+      await newFile.save();
+
+      // Update the folder to include this new file
+      const folderId = req.body.folderId;
+      if (folderId) {
+          await Folder.findByIdAndUpdate(folderId, { $push: { files: newFile._id } });
+      }
+
+      res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+  } catch (error) {
+      res.status(500).json({ message: 'Error uploading file', error: error });
+  }
+});
+
+
+
+//List File Endpoint
+app.get('/files', async (req, res) => {
+  try {
+    const files = await File.find();
+    const fileData = files.map(file => {
+      return {
+        ...file.toObject(),
+        url: `http://localhost:5001/uploads/${encodeURIComponent(file.name)}`
+      };
+    });
+    res.status(200).json(fileData);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching files', error: error });
+  }
+});
+
+//File Delete Endpoint
+app.delete('/files/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const file = await File.findById(id);
+
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    // Delete the file from the filesystem
+    if (file.content && fs.existsSync(file.content)) {
+      fs.unlinkSync(file.content);
+    }
+
+    // Update folders to remove reference to this file
+    await Folder.updateMany(
+      { files: mongoose.Types.ObjectId(id) },
+      { $pull: { files: mongoose.Types.ObjectId(id) } }
+    );
+
+    // Delete the file from the database
+    await File.findByIdAndDelete(id);
+
+    res.status(200).json({ message: 'File deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting file', error: error });
+  }
+});
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
