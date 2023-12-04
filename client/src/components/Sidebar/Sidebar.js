@@ -4,7 +4,7 @@ function Sidebar() {
     const [folders, setFolders] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5001/folders').then(response => {
+        fetch('http://localhost:5001/MainPage').then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
