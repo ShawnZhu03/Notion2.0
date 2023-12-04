@@ -39,6 +39,7 @@ const LoginReg = () => {
             console.log(response);
 
             if (response.ok) {
+                localStorage.setItem("username", username);
                 navigate('/MainPage');
                 
             } else {

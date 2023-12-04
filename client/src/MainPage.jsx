@@ -10,15 +10,20 @@ const MainPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState(null);
   //list of folders from backend
   const [folders, setFolders] = useState([]);
+  const username = (localStorage.getItem("username"));
 
   //fetch folder data
   useEffect(() => {
-    fetch('http://localhost:5001/MainPage')
-      .then(response => response.json())
-      .then(data => setFolders(data))
-      .catch(error => console.error('Error fetching folders:', error));
-  }, []);
-
+        fetch('http://localhost:5001/MainPage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                owner: username 
+            })
+        })
+      })
   //add new folder to list
   const addNewFolderToList = (newFolder) => {
     setFolders(prevFolders => [...prevFolders, newFolder]);

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { json } from 'react-router-dom';
 
 function Sidebar({ onFolderSelect, onAddFolder }) {
     // Name of new folder
@@ -9,9 +10,16 @@ function Sidebar({ onFolderSelect, onAddFolder }) {
     // Folders state
     const [folders, setFolders] = useState([]);
 
+    const username = (localStorage.getItem("username"));
     useEffect(() => {
         fetch('http://localhost:5001/MainPage', {
-            method: 'GET',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                owner: username 
+            })
         })
              
             .then(response => {
@@ -39,10 +47,10 @@ function Sidebar({ onFolderSelect, onAddFolder }) {
 
         const newFolder = {
             folderName: newFolderName,
-            owner: '656d52bbc51ea1bc6b0b6de0'
+            owner: username
         };
 
-        fetch('http://localhost:5001/MainPage', {
+        fetch('http://localhost:5001/AddFolder', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
