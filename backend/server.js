@@ -85,9 +85,12 @@ app.post('/login', async (req, res) => {
 });
 
 // Fetch Folders Endpoint
-app.get('/MainPage', async (req, res) => {
+app.post('/MainPage', async (req, res) => {
+  
   try {
-    const folders = await Folder.find(); 
+    const {owner} = req.body;
+    console.log(owner);
+    const folders = await Folder.find({ owner: owner }); 
     res.json(folders); 
   } catch (error) {
     console.error('Error fetching folders:', error);
@@ -96,7 +99,7 @@ app.get('/MainPage', async (req, res) => {
 });
 
 //Make Folders Endpoint
-app.post('/MainPage', async (req, res) => {
+app.post('/AddFolder', async (req, res) => {
   try {
     const {folderName, owner} = req.body;
     const newFolder = new Folder({ folderName, owner});
