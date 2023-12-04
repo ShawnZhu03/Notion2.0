@@ -4,9 +4,9 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
-const User = require('./path-to-user-model');
+const User = require('./models/users.js');
 
-const port = process.env.PORT || 3001;
+const port = 5001;
 
 app.use(cors());
 app.use(express.json());

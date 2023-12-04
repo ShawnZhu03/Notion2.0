@@ -1,16 +1,20 @@
 import logo from './logo.svg';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import LoginReg from '../logInReg/LoginReg';
-
+import Login from '../pages/login';
 
 
 function App() {
   return (
+    
     <Router>
-      <div>
-        <LoginReg />
-      </div>
+      <Routes>
+        <Route index element = {<Login/>} />
+          
+        <Route path = "/MainPage">
+
+        </Route>
+      </Routes>
     </Router>
   );
 }
