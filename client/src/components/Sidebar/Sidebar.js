@@ -5,18 +5,12 @@ function Sidebar() {
     const [newFolderName, setNewFolderName] = useState('');
 
     useEffect(() => {
-        fetchFolders();
-    }, []);
-
-    //list all current folders
-    const fetchFolders = () => {
-        fetch('http://localhost:5001/folders')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        fetch('http://localhost:5001/MainPage').then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
             .then(data => {
                 setFolders(data);
             })

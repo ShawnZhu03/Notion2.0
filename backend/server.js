@@ -22,6 +22,7 @@ connection.once('open', () => {
   console.log("mongoose databse connection established successfully");
 })
 
+
 // Sign Up Endpoint
 app.post('/signup', async (req, res) => {
   try {
@@ -67,7 +68,7 @@ app.post('/login', async (req, res) => {
 });
 
 //Fetch Folders Endpoint
-app.get('/folders', async (req, res) => {
+app.get('/MainPage', async (req, res) => {
   try {
     const folders = await Folder.find(); 
     res.json(folders);
