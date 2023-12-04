@@ -4,25 +4,23 @@ const bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 
 const folderSchema = new Schema ({
-    name : {
+    folderName : {
         type: String, 
         required: true,
         trim: true,
         minlength: 1
     },
 
-    owner: [{
-            type: String,
-            
-    }],
+    owner: {
+        type: String,
+        required: true,
+        ref: 'User'
+    },
     files: [{
         type: Schema.Types.ObjectId,
         ref: 'File',
-        required: true
     }]
 });
-
-folderSchema.index({ name: 1, owner: 1 }, { unique: true });
 
 const Folder = mongoose.model('Folder', folderSchema);
 

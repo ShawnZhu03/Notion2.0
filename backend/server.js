@@ -77,6 +77,22 @@ app.get('/MainPage', async (req, res) => {
   }
 });
 
+//Make Folders Endpoint
+app.post('/MainPage', async (req, res) => {
+  try {
+    const {folderName, owner} = req.body;
+    const newFolder = new Folder({ folderName, owner});
+    console.log(folderName);
+    console.log(newFolder);
+    await newFolder.save();
+    res.status(201).json({ message: 'Folder created successfully' });
+    
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating Folder' });
+    console.log("create folder failed")
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);

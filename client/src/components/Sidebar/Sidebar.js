@@ -17,22 +17,23 @@ function Sidebar() {
             .catch(error => {
                 console.error('There was an error fetching the folders:', error);
             });
-    };
+    })
 
     //Add folders
     const handleAddFolder = (e) => {
         e.preventDefault();
 
         const newFolder = {
-            name: newFolderName,
+            folderName: newFolderName,
+            owner: '656d13647b8be20b23864689'
         };
 
-        fetch('http://localhost:5001/folders', {
+        fetch('http://localhost:5001/MainPage', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newFolder),
+            body: JSON.stringify(newFolder)
         })
             .then(response => {
                 if (!response.ok) {
