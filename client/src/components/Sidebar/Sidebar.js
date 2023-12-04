@@ -1,23 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-function Sidebar() {
-    const [folders, setFolders] = useState([]);
+function Sidebar({ folders, onFolderSelect, onAddFolder }) {
     const [newFolderName, setNewFolderName] = useState('');
-
-    useEffect(() => {
-        fetch('http://localhost:5001/MainPage').then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-            .then(data => {
-                setFolders(data);
-            })
-            .catch(error => {
-                console.error('There was an error fetching the folders:', error);
-            });
-    });
 
     //Add folders
     const handleAddFolder = (e) => {
@@ -41,8 +25,8 @@ function Sidebar() {
                 return response.json();
             })
             .then(addedFolder => {
-                setFolders([...folders, addedFolder]);
-                setNewFolderName(''); 
+                onAddFolder(addedFolder);
+                setNewFolderName('');
             })
             .catch(error => {
                 console.error('There was an error adding the folder:', error);
@@ -52,7 +36,7 @@ function Sidebar() {
     return (
         <aside style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
             {folders.map(folder => (
-                <div key={folder._id} style={{ margin: '10px' }}>
+                <div key={folder._id} style={{ margin: '10px' }} onClick={() => onFolderSelect(folder._id)}>
                     {folder.name}
                 </div>
             ))}

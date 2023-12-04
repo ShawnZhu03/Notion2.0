@@ -8,6 +8,8 @@ const cors = require('cors');
 const User = require('./models/users.js');
 const Folder = require('./models/folders.js');
 const File = require('./models/files.js');
+const fs = require('fs');
+
 
 const port = 5001;
 
@@ -16,7 +18,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname); // Use the original file name
+    cb(null, file.originalname);
   }
 });
 
@@ -80,30 +82,74 @@ app.post('/login', async (req, res) => {
   }
 });
 
-//Fetch Folders Endpoint
+// Fetch Folders Endpoint
 app.get('/MainPage', async (req, res) => {
   try {
-    const folders = await Folder.find();
-    res.json(folders);
+    const folders = await Folder.find(); 
+    res.json(folders); 
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching folders' });
+    res.status(500).json({ message: 'Error fetching folders', error: error });
+  }
+});
+
+// Add Folder Endpoint
+app.post('/folders', async (req, res) => {
+  try {
+    const { name } = req.body;
+    const existingFolder = await Folder.findOne({ name });
+
+    // Check if folder already exists
+    if (existingFolder) {
+      return res.status(400).json({ message: 'Folder with this name already exists' });
+    }
+
+    const newFolder = new Folder({ name });
+    await newFolder.save(); // Creates a new folder
+
+    res.status(201).json(newFolder); // Returns the new folder
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating folder', error: error });
+  }
+});
+
+// Fetch Files by Folder ID Endpoint
+app.get('/files', async (req, res) => {
+  try {
+    const folderId = req.query.folderId;
+    if (!folderId) {
+      return res.status(400).json({ message: 'Folder ID is required' });
+    }
+
+    const files = await File.find({ folder: folderId }); // Assuming 'folder' field in File schema stores the folder ID
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching files', error: error });
   }
 });
 
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    const newFile = new File({
-      name: req.file.originalname, // Original name of the file
-      folder: [],
-      content: req.file.path // Path where the file is saved
-    });
-    await newFile.save();
-    res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+      // Create a new file document
+      const newFile = new File({
+          name: req.file.originalname,
+          folder: req.body.folderId,
+          content: req.file.path
+      });
+      await newFile.save();
+
+      // Update the folder to include this new file
+      const folderId = req.body.folderId;
+      if (folderId) {
+          await Folder.findByIdAndUpdate(folderId, { $push: { files: newFile._id } });
+      }
+
+      res.status(200).json({ message: 'File uploaded successfully', file: newFile });
   } catch (error) {
-    res.status(500).json({ message: 'Error uploading file', error: error });
+      res.status(500).json({ message: 'Error uploading file', error: error });
   }
 });
+
 
 
 //List File Endpoint
@@ -122,6 +168,35 @@ app.get('/files', async (req, res) => {
   }
 });
 
+//File Delete Endpoint
+app.delete('/files/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const file = await File.findById(id);
+
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    // Delete the file from the filesystem
+    if (file.content && fs.existsSync(file.content)) {
+      fs.unlinkSync(file.content);
+    }
+
+    // Update folders to remove reference to this file
+    await Folder.updateMany(
+      { files: mongoose.Types.ObjectId(id) },
+      { $pull: { files: mongoose.Types.ObjectId(id) } }
+    );
+
+    // Delete the file from the database
+    await File.findByIdAndDelete(id);
+
+    res.status(200).json({ message: 'File deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting file', error: error });
+  }
+});
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
