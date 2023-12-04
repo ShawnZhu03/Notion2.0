@@ -1,13 +1,16 @@
 //server
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const multer = require('multer'); 
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const User = require('./models/users.js');
 const Folder = require('./models/folders.js');
+const File = require('./models/files.js');
 
 const port = 5001;
+const upload = multer({dest: 'uploads/'});
 
 app.use(cors());
 app.use(express.json());
@@ -77,6 +80,30 @@ app.get('/MainPage', async (req, res) => {
   }
 });
 
+//File Upload Endpoint
+app.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+      const newFile = new File({
+          name: req.file.originalname,
+          folder: [], 
+          content: req.file.path 
+      });
+      await newFile.save();
+      res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+  } catch (error) {
+      res.status(500).json({ message: 'Error uploading file', error: error });
+  }
+});
+
+//List File Endpoint
+app.get('/files', async (req, res) => {
+  try {
+      const files = await File.find();
+      res.status(200).json(files);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching files', error: error });
+  }
+});
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);

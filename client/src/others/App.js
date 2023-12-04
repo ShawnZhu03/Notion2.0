@@ -10,7 +10,6 @@ function App() {
     <Router>
       <Routes>
         <Route index element = {<LoginReg/>} />
-          
         <Route path = "/MainPage" element = {<MainPage/>}>
 
         </Route>

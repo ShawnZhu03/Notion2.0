@@ -17,7 +17,7 @@ function Sidebar() {
             .catch(error => {
                 console.error('There was an error fetching the folders:', error);
             });
-    };
+    });
 
     //Add folders
     const handleAddFolder = (e) => {
