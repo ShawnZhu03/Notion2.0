@@ -18,7 +18,6 @@ const folderSchema = new Schema ({
     files: [{
         type: Schema.Types.ObjectId,
         ref: 'File',
-        required: true
     }]
 });
 

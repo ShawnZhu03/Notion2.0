@@ -13,6 +13,7 @@ const fs = require('fs');
 
 const port = 5001;
 
+//store uploaded files in uploads directory
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -23,6 +24,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
@@ -83,17 +85,18 @@ app.post('/login', async (req, res) => {
 });
 
 // Fetch Folders Endpoint
-app.get('/MainPage', async (req, res) => {
+app.get('/folders', async (req, res) => {
   try {
     const folders = await Folder.find(); 
     res.json(folders); 
   } catch (error) {
+    console.error('Error fetching folders:', error);
     res.status(500).json({ message: 'Error fetching folders', error: error });
   }
 });
 
 // Add Folder Endpoint
-app.post('/folders', async (req, res) => {
+app.post('/Addfolders', async (req, res) => {
   try {
     const { name } = req.body;
     const existingFolder = await Folder.findOne({ name });

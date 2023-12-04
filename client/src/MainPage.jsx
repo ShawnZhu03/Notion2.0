@@ -5,18 +5,26 @@ import FileUpload from './components/Content/FileUpload';
 import './MainPage.scss';
 
 const MainPage = () => {
+
+  //current selected folder's ID
   const [selectedFolderId, setSelectedFolderId] = useState(null);
+  //list of folders from backend
   const [folders, setFolders] = useState([]);
-  const addNewFolderToList = (newFolder) => {
-    setFolders(prevFolders => [...prevFolders, newFolder]);
-  };
+
+  //fetch folder data
   useEffect(() => {
-    fetch('http://localhost:5001/folders') // Adjust the endpoint as necessary
+    fetch('http://localhost:5001/folders')
       .then(response => response.json())
       .then(data => setFolders(data))
       .catch(error => console.error('Error fetching folders:', error));
   }, []);
 
+  //add new folder to list
+  const addNewFolderToList = (newFolder) => {
+    setFolders(prevFolders => [...prevFolders, newFolder]);
+  };
+
+  //update select folder state
   const handleFolderSelect = (folderId) => {
     setSelectedFolderId(folderId);
   };

@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 
 function Sidebar({ folders, onFolderSelect, onAddFolder }) {
+    //Name of new folder 
     const [newFolderName, setNewFolderName] = useState('');
+    // current selected folder ID 
+    const [selectedFolderId, setSelectedFolderId] = useState(null);
+
+
+    const handleFolderClick = (folderId) => {
+        setSelectedFolderId(folderId);
+        onFolderSelect(folderId);
+    };
 
     //Add folders
     const handleAddFolder = (e) => {
@@ -11,7 +20,7 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
             name: newFolderName,
         };
 
-        fetch('http://localhost:5001/folders', {
+        fetch('http://localhost:5001/Addfolders', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,7 +45,15 @@ function Sidebar({ folders, onFolderSelect, onAddFolder }) {
     return (
         <aside style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
             {folders.map(folder => (
-                <div key={folder._id} style={{ margin: '10px' }} onClick={() => onFolderSelect(folder._id)}>
+                <div
+                    key={folder._id}
+                    style={{
+                        margin: '10px',
+                        cursor: 'pointer',
+                        backgroundColor: folder._id === selectedFolderId ? '#f0f0f0' : 'transparent',
+                    }}
+                    onClick={() => handleFolderClick(folder._id)}
+                >
                     {folder.name}
                 </div>
             ))}
