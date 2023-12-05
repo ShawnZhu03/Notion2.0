@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
+    const [newFolderName, setNewFolderName] = useState('');
+    const [profilePic, setProfilePic] = useState('');
+    const username = localStorage.getItem("username");
+
+}
+
+
+
+
+function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
   const [newFolderName, setNewFolderName] = useState('');
   const username = localStorage.getItem("username");
 
