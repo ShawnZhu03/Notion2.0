@@ -92,12 +92,12 @@ app.post('/login', async (req, res) => {
 
 // Fetch Folders Endpoint
 app.post('/MainPage', async (req, res) => {
-  
+
   try {
-    const {owner} = req.body;
+    const { owner } = req.body;
     console.log(owner);
-    const folders = await Folder.find({ owner: owner }); 
-    res.json(folders); 
+    const folders = await Folder.find({ owner: owner });
+    res.json(folders);
   } catch (error) {
     console.error('Error fetching folders:', error);
     res.status(500).json({ message: 'Error fetching folders', error: error });
@@ -107,15 +107,35 @@ app.post('/MainPage', async (req, res) => {
 //Make Folders Endpoint
 app.post('/AddFolder', async (req, res) => {
   try {
-    const {folderName, owner} = req.body;
-    const newFolder = new Folder({ folderName, owner});
+    const { folderName, owner } = req.body;
+    const newFolder = new Folder({ folderName, owner });
     console.log(folderName);
     console.log(newFolder);
     console.log(owner);
 
     await newFolder.save();
     res.status(201).json({ message: 'Folder created successfully' });
-    
+
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating Folder' });
+    console.log("create folder failed")
+  }
+});
+
+//Make Notes Endpoint
+app.post('/AddNote', async (req, res) => {
+  try {
+    const { name, content, folderId } = req.body;
+
+    const newNote = new Note({
+      name: title,
+      content: content,
+      folder: folderId
+    });
+
+    await newNote.save();
+    res.status(201).json({ message: 'Folder created successfully' });
+
   } catch (error) {
     res.status(500).json({ message: 'Error creating Folder' });
     console.log("create folder failed")
@@ -141,7 +161,15 @@ app.get('/files', async (req, res) => {
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    console.log(res);
+    //const newFile = new File({
+    //   name: req.file.originalname,
+    //   folder: req.body.folderId,
+    //   content: req.file.path
+    // });
+    // console.log(newFile);
+    // await newFile.save();
+
+    // console.log(res);
     res.status(200).json({ message: 'File uploaded successfully', file: req.file });
   } catch (error) {
     res.status(500).json({ message: 'Error uploading file', error: error });
@@ -196,6 +224,24 @@ app.delete('/files/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting file', error: error });
   }
 });
+
+//Profile Pic Upload Endpoint
+app.post('/uploadProfilePicture', upload.single('profilePicture'), (req, res) => {
+  const username = req.body.username; 
+  const profilePictureUrl = req.file.path; 
+
+  User.findOneAndUpdate({ username: username }, { profilePicture: profilePictureUrl }, { new: true }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error updating profile picture', error: err });
+    }
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ message: 'Profile picture updated successfully', user });
+  });
+});
+
+
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
