@@ -9,35 +9,41 @@ const User = require('./models/users.js');
 const Folder = require('./models/folders.js');
 const File = require('./models/files.js');
 const fs = require('fs');
+const { GridFsStorage } = require('multer-gridfs-storage');
 
 
-const port = 5001;
-
-//store uploaded files in uploads directory
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
-
-const upload = multer({ storage: storage });
-
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
 require('dotenv').config();
+
+const port = 5001;
 const uri = process.env.ATLAS_URI;
 
+
+const storage = new GridFsStorage({
+  url: uri, 
+  options: { useNewUrlParser: true, useUnifiedTopology: true },
+  file: (req, file) => {
+    return {
+      bucketName: 'uploads', 
+      filename: file.originalname,
+    };
+  },
+});
 mongoose.connect(uri);
 
 const connection = mongoose.connection;
 connection.once('open', () => {
   console.log("mongoose databse connection established successfully");
 })
+const upload = multer({ storage: storage });
+
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+app.use(cors());
+app.use(upload.single('file'));
+
+
+
 
 
 // Sign Up Endpoint
@@ -135,26 +141,13 @@ app.get('/files', async (req, res) => {
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
-      // Create a new file document
-      const newFile = new File({
-          name: req.file.originalname,
-          folder: req.body.folderId,
-          content: req.file.path
-      });
-      console.log(newFile);
-      await newFile.save();
-
-      // Update the folder to include this new file
-      const folderId = req.body.folderId;
-      if (folderId) {
-          await Folder.findByIdAndUpdate(folderId, { $push: { files: newFile._id } });
-      }
-
-      res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+    console.log(res);
+    res.status(200).json({ message: 'File uploaded successfully', file: req.file });
   } catch (error) {
-      res.status(500).json({ message: 'Error uploading file', error: error });
+    res.status(500).json({ message: 'Error uploading file', error: error });
   }
 });
+
 
 
 
