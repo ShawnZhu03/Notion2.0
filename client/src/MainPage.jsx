@@ -5,41 +5,47 @@ import FileUpload from './components/Content/FileUpload';
 import './MainPage.scss';
 
 const MainPage = () => {
-
-  //current selected folder's ID
   const [selectedFolderId, setSelectedFolderId] = useState(null);
-  //list of folders from backend
   const [folders, setFolders] = useState([]);
-  const username = (localStorage.getItem("username"));
+  const username = localStorage.getItem("username");
 
-  //fetch folder data
   useEffect(() => {
-        fetch('http://localhost:5001/MainPage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                owner: username 
-            })
-        })
+    // Fetch folders and set them in the state
+    fetch('http://localhost:5001/MainPage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        owner: username
       })
-  //add new folder to list
+    })
+    .then(response => response.json())
+    .then(data => setFolders(data))
+    .catch(error => console.error('Error fetching folders:', error));
+    console.log(folders)
+  }, [username]);
+
+  // useEffect(() => {
+  //   // Log selectedFolderId whenever it changes
+  //   console.log(selectedFolderId);
+  // }, [selectedFolderId]);
+
   const addNewFolderToList = (newFolder) => {
     setFolders(prevFolders => [...prevFolders, newFolder]);
   };
 
-  //update select folder state
-  const handleFolderSelect = (folderId) => {
-    setSelectedFolderId(folderId);
-  };
-
   return (
     <div className="main-page">
-      <Sidebar folders={folders} onFolderSelect={handleFolderSelect} onAddFolder={addNewFolderToList} />
+      <Sidebar
+        folders={folders}
+        selectedFolderId={selectedFolderId}
+        onFolderSelect={setSelectedFolderId}
+        onAddFolder={addNewFolderToList}
+      />
       <div className="page-body">
         <div className="Content">
-        <FileList selectedFolderId={selectedFolderId} />
+          <FileList selectedFolderId={selectedFolderId} />
           <FileUpload />
         </div>
       </div>
@@ -48,5 +54,3 @@ const MainPage = () => {
 }
 
 export default MainPage;
-
-

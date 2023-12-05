@@ -15,11 +15,7 @@ const userSchema = new Schema ({
     password: {
         type: String,
         required: true
-    },
-    folders: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Folder'
-    }]
+    }
 });
 
 //Hash Password
