@@ -8,7 +8,7 @@ import './MainPage.scss';
 const MainPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState(null);
   const [folders, setFolders] = useState([]);
-  
+  const [refreshFileList, setRefreshFileList] = useState(false); // State to trigger refresh
 
   const username = localStorage.getItem("username");
 
@@ -23,11 +23,10 @@ const MainPage = () => {
       .then(data => setFolders(data))
       .catch(error => console.error('Error fetching folders:', error));
   };
-  
+
   useEffect(() => {
     fetchFolders();
-  }, [username]);
-  
+  }, [username, refreshFileList]); // Add refreshFileList to the dependency array
 
   const addNewFolderToList = (newFolder) => {
     fetch('http://localhost:5001/AddFolder', {
@@ -37,12 +36,17 @@ const MainPage = () => {
     })
       .then(response => response.json())
       .then(data => {
-        fetchFolders(); 
+        fetchFolders(); // Refresh folders
       })
       .catch(error => console.error('Error adding folder:', error));
   };
 
-   return (
+  // Function to refresh file list
+  const handleFileUploadSuccess = () => {
+    setRefreshFileList(prevState => !prevState); // Toggle state to trigger useEffect
+  };
+
+  return (
     <div className="main-page">
       <Sidebar
         folders={folders}
@@ -53,8 +57,8 @@ const MainPage = () => {
       <div className="page-body">
         <div className="content">
           <FileList selectedFolderId={selectedFolderId} />
-          <FileUpload />
-          <NotesArea folderId={selectedFolderId}/> 
+          <FileUpload onFileUpload={handleFileUploadSuccess} /> {/* Pass the callback */}
+          <NotesArea folderId={selectedFolderId} />
         </div>
       </div>
     </div>

@@ -4,44 +4,33 @@ export default function FileList({ selectedFolderId }) {
     const [files, setFiles] = useState([]);
 
     useEffect(() => {
-        if (selectedFolderId) {
-            fetchFiles(selectedFolderId);
-        } else {
-            setFiles([]); // Clear files if no folder is selected
-        }
-    }, [selectedFolderId]);
-
-    const fetchFiles = async (folderId) => {
-        try {
-            const response = await fetch(`http://localhost:5001/files?folderId=${folderId}`);
-            const data = await response.json();
-            setFiles(data);
-        } catch (error) {
-            console.error('Error fetching files:', error);
-        }
-    };
-
-    const deleteFile = async (id) => {
-        try {
-            const response = await fetch(`http://localhost:5001/files/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                // Remove the file from the state
-                setFiles(files.filter(file => file._id !== id));
-            } else {
-                console.error('Failed to delete the file');
+        const fetchFiles = async () => {
+            try {
+                const response = await fetch('http://localhost:5001/files');
+                const data = await response.json();
+                setFiles(data.filter(file => file.folderId === selectedFolderId)); // Filter by selected folder
+            } catch (error) {
+                console.error('Error fetching files:', error);
             }
-        } catch (error) {
-            console.error('Error deleting file:', error);
+        };
+        if (selectedFolderId) { // Only fetch if a folder is selected
+            fetchFiles();
         }
+    }, [selectedFolderId]); // Dependency array includes selectedFolderId
+
+    const getFileUrl = (fileName) => {
+        return `http://localhost:5001/uploads/${fileName}`;
     };
 
-     return (
+    return (
         <div>
             <h2>Uploaded Files</h2>
             <ul>
                 {files.map(file => (
                     <li key={file._id}>
-                        {/* ... existing file rendering logic ... */}
+                        <a href={getFileUrl(file.name)} target="_blank" rel="noopener noreferrer">
+                            {file.name}
+                        </a>
                     </li>
                 ))}
             </ul>
