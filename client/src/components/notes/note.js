@@ -5,19 +5,44 @@ function NotesArea({ folderId, onAddNote }) {
     const [noteContent, setNoteContent] = useState('');
 
     const handleAddNote = () => {
-        const newNote = { id: Date.now(), title: noteTitle, content: noteContent };
-        onAddNote(newNote, folderId);
-        setNoteTitle('');
-        setNoteContent('');
+        const newNote = { title: noteTitle, content: noteContent, folderId: folderId };
+
+        fetch('http://localhost:5001/AddNote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newNote)
+        })
+            .then(response => response.json())
+            .then(addedNote => {
+                onAddNote(addedNote);
+                setNoteTitle('');
+                setNoteContent('');
+            })
+            .catch(error => console.error('Error adding note:', error));
     };
 
     return (
-        <div>
-            <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} placeholder="Note Title" />
-            <textarea value={noteContent} onChange={(e) => setNoteContent(e.target.value)} placeholder="Note Content" />
-            <button onClick={handleAddNote}>Add Note</button>
+        <div className="note-container">
+            <input
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                placeholder="Note Title"
+                className="note-title-input"
+            />
+            <textarea
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                placeholder="Note Content"
+                className="note-content-textarea"
+            />
+            <button 
+                onClick={handleAddNote}
+                className="add-note-button"
+            >
+                Add Note
+            </button>
         </div>
     );
-}
-
+    
+    }
 export default NotesArea;
