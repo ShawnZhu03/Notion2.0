@@ -10,11 +10,11 @@ const fileSchema = new Schema ({
         trim: true,
         minlength: 1
     },
-    folder: [{
+    folder: {
         type: Schema.Types.ObjectId,
         ref: 'Folder',
         required: true
-    }],
+    },
     content: {}
 });
 

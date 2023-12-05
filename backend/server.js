@@ -141,6 +141,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
           folder: req.body.folderId,
           content: req.file.path
       });
+      console.log(newFile);
       await newFile.save();
 
       // Update the folder to include this new file
