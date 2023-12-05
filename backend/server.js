@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const User = require('./models/users.js');
 const Folder = require('./models/folders.js');
+const Note = require('./models/notes.js')
 const File = require('./models/files.js');
 const fs = require('fs');
 const { GridFsStorage } = require('multer-gridfs-storage');
@@ -122,23 +123,35 @@ app.post('/AddFolder', async (req, res) => {
   }
 });
 
+//fetch notes endpoint
+app.post('/Notes', async (req, res) => {
+  try {
+    const { folder } = req.body;
+    console.log(folder);
+    const notes = await Note.find({ folder: folder });
+    res.json(notes);
+  } catch (error) {
+    console.error('Error fetching folders:', error);
+    res.status(500).json({ message: 'Error fetching folders', error: error });
+  }
+});
+
 //Make Notes Endpoint
 app.post('/AddNote', async (req, res) => {
   try {
-    const { name, content, folderId } = req.body;
-
+    const { name, folder, content } = req.body;
     const newNote = new Note({
-      name: title,
+      name: name,
+      folder: folder,
       content: content,
-      folder: folderId
     });
-
+    console.log(newNote);
     await newNote.save();
-    res.status(201).json({ message: 'Folder created successfully' });
+    res.status(201).json({ message: 'Note created successfully' });
 
   } catch (error) {
-    res.status(500).json({ message: 'Error creating Folder' });
-    console.log("create folder failed")
+    res.status(500).json({ message: 'Error creating Note' });
+    console.log("create Note failed")
   }
 });
 
