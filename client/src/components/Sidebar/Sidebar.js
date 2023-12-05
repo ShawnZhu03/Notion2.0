@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
     const [newFolderName, setNewFolderName] = useState('');
     const username = localStorage.getItem("username");
+    const [profilePicture, setProfilePicture] = useState(localStorage.getItem("profilePicture") || 'path/to/default/profile.png');
 
     const handleFolderClick = (folderId) => {
         console.log(folderId);
@@ -32,8 +33,24 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
             .catch(error => console.error('Error adding folder:', error));
     };
 
+    const handleProfilePictureUpload = (e) => {
+ 
+    };
+
     return (
         <aside style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                <img
+                    src={profilePicture}
+                    alt="Profile"
+                    style={{ width: '100px', height: '100px', borderRadius: '50%' }}
+                />
+                <input
+                    type="file"
+                    onChange={handleProfilePictureUpload}
+                    style={{ display: 'block', margin: '10px auto' }}
+                />
+            </div>
             {folders.map(folder => (
                 <div
                     key={folder._id}

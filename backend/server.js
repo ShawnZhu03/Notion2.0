@@ -224,6 +224,24 @@ app.delete('/files/:id', async (req, res) => {
   }
 });
 
+//Profile Pic Upload Endpoint
+app.post('/uploadProfilePicture', upload.single('profilePicture'), (req, res) => {
+  const username = req.body.username; 
+  const profilePictureUrl = req.file.path; 
+
+  User.findOneAndUpdate({ username: username }, { profilePicture: profilePictureUrl }, { new: true }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error updating profile picture', error: err });
+    }
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ message: 'Profile picture updated successfully', user });
+  });
+});
+
+
+
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
 })
