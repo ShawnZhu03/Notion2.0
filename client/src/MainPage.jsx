@@ -44,7 +44,7 @@ const MainPage = () => {
 
   // Function to refresh file list
   const handleFileUploadSuccess = () => {
-    setRefreshFileList(prevState => !prevState); // Toggle state to trigger useEffect
+    fetchFolders(selectedFolderId);
   };
 
   return (

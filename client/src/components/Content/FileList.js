@@ -24,7 +24,7 @@ export default function FileList({ selectedFolderId }) {
 
     return (
         <div>
-            <h2>Uploaded Files</h2>
+            <h2>Welcome {localStorage.getItem('username')}</h2>
             <ul>
                 {files.map(file => (
                     <li key={file._id}>

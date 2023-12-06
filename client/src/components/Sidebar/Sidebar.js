@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../MainPage.css'
 function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
     const [newFolderName, setNewFolderName] = useState('');
@@ -7,7 +7,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
 
     useEffect(() => {
         fetchProfilePicture();
-    }, [username]);
+    }, [profilePicture]);
 
     const fetchProfilePicture = async () => {
         try {
