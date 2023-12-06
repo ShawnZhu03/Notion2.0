@@ -1,9 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
     const [newFolderName, setNewFolderName] = useState('');
     const username = localStorage.getItem("username");
     const [profilePicture, setProfilePicture] = useState(localStorage.getItem("profilePicture") || 'path/to/default/profile.png');
+
+    useEffect(() => {
+        fetchProfilePicture();
+    }, [username]);
+
+    const fetchProfilePicture = async () => {
+        try {
+            const response = await fetch(`http://localhost:5001/getUserProfilePic/${username}`);
+            console.log('Fetching profile picture for:', username); // Log username
+            console.log('Response status:', response.status);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Profile picture URL:', data.profilePicUrl); // Log profile picture URL
+                setProfilePicture(data.profilePicUrl);
+                localStorage.setItem("profilePicture", data.profilePicUrl);
+            }
+        } catch (error) {
+            console.error('Error fetching profile picture:', error);
+        }
+    };
 
     const handleFolderClick = (folderId) => {
         console.log(folderId);
@@ -33,9 +53,38 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
             .catch(error => console.error('Error adding folder:', error));
     };
 
-    const handleProfilePictureUpload = (e) => {
- 
+    const handleProfilePictureUpload = async (e) => {
+        e.preventDefault();
+
+        if (e.target.files && e.target.files[0]) {
+            let formData = new FormData();
+
+            formData.append('profilePicture', e.target.files[0]);
+            formData.append('username', username);
+
+            try {
+                const response = await fetch('http://localhost:5001/uploadProfilePicture', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const uploadedProfilePicUrl = data.profilePictureUrl;
+                    setProfilePicture(uploadedProfilePicUrl); 
+                    localStorage.setItem("profilePicture", uploadedProfilePicUrl); 
+                    alert('Profile picture uploaded successfully');
+                } else {
+                    alert('Upload failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else {
+            alert('No file selected');
+        }
     };
+
 
     return (
         <aside style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
@@ -51,6 +100,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
                     style={{ display: 'block', margin: '10px auto' }}
                 />
             </div>
+
             {folders.map(folder => (
                 <div
                     key={folder._id}
