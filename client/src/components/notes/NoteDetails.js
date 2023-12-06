@@ -1,7 +1,7 @@
 // NoteDetails.js
 import React, { useState, useEffect } from 'react';
 
-function NoteDetails({ note , fetchNotes, folderId }) {
+function NoteDetails({ note , fetchNotes, folderId, setNote }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -28,6 +28,23 @@ function NoteDetails({ note , fetchNotes, folderId }) {
       .catch(error => console.error('Error adding note:', error));
   };
 
+  const handleDelete = () => {
+    const DeleteNote = {_id: note._id};
+    console.log(DeleteNote);
+    fetch('http://localhost:5001/DeleteNote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(DeleteNote)
+    })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+        setNote(null);
+        fetchNotes(folderId)
+      })
+      .catch(error => console.error('Error deleting note:', error));
+  };
+
   if (!note) {
     return null; // If no note is selected, don't render anything
   }
@@ -50,6 +67,10 @@ function NoteDetails({ note , fetchNotes, folderId }) {
 
       <button onClick = {handleEdit}>
         Save Changes
+      </button>
+
+      <button onClick = {handleDelete}>
+        Delete Note
       </button>
     </div>
   );

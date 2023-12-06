@@ -283,6 +283,24 @@ app.post('/EditNote', async (req, res) => {
   }
 });
 
+//delete note endpoint
+app.post('/DeleteNote', async (req, res) => {
+  try {
+    const { _id } = req.body;
+    console.log(`id: ${_id}`);
+
+    const result = await Note.deleteOne({ _id });
+
+    if (result.deletedCount === 0) {
+      res.status(404).json({ message: 'Document not found' });
+    } else {
+      res.status(200).json({ message: 'Document deleted' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting note', error: error.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
 })
