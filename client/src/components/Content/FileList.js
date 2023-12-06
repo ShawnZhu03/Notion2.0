@@ -8,15 +8,15 @@ export default function FileList({ selectedFolderId }) {
             try {
                 const response = await fetch('http://localhost:5001/files');
                 const data = await response.json();
-                setFiles(data.filter(file => file.folderId === selectedFolderId)); // Filter by selected folder
+                setFiles(data.filter(file => file.folderId === selectedFolderId)); // problem with data.filter 
             } catch (error) {
                 console.error('Error fetching files:', error);
             }
         };
-        if (selectedFolderId) { // Only fetch if a folder is selected
+        if (selectedFolderId) { 
             fetchFiles();
         }
-    }, [selectedFolderId]); // Dependency array includes selectedFolderId
+    }, [selectedFolderId]); 
 
     const getFileUrl = (fileName) => {
         return `http://localhost:5001/uploads/${fileName}`;
