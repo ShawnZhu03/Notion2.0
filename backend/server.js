@@ -15,17 +15,32 @@ const port = 5001;
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+app.use('/ProfilePic', express.static('ProfilePic'));
 
-const storage = multer.diskStorage({
+// Storage for general file uploads
+const fileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null,'uploads/');
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname); 
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage: fileStorage });
+
+// Storage for profile pictures
+const profilePicStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null,'ProfilePic/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const uploadProfilePic = multer({ storage: profilePicStorage });
+
 
 
 require('dotenv').config();
@@ -101,7 +116,7 @@ app.post('/AddFolder', async (req, res) => {
   try {
     const { folderName, owner } = req.body;
     const newFolder = new Folder({ folderName, owners: [owner] });
-    console.log(owner); 
+    console.log(owner);
 
     await newFolder.save();
     res.status(201).json({ message: 'Folder created successfully' });
@@ -170,7 +185,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
       content: req.file.path
     });
     await newFile.save();
-    res.status(200). json({ message: 'File uploaded successfully', file: newFile });
+    res.status(200).json({ message: 'File uploaded successfully', file: newFile });
   } catch (error) {
     res.status(500).json({ message: 'Error uploading file', error: error });
   }
@@ -194,51 +209,45 @@ app.get('/files', async (req, res) => {
   }
 });
 
-//File Delete Endpoint
-/*app.delete('/files/:id', async (req, res) => {
+//Profile Pic Upload Endpoint
+app.post('/uploadProfilePicture', uploadProfilePic.single('profilePicture'), async (req, res) => {
   try {
-    const { id } = req.params;
-    const file = await File.findById(id);
+    const username = req.body.username;
+    const profilePictureUrl = req.file.path;
 
-    if (!file) {
-      return res.status(404).json({ message: 'File not found' });
-    }
-
-    // Delete the file from the filesystem
-    if (file.content && fs.existsSync(file.content)) {
-      fs.unlinkSync(file.content);
-    }
-
-    // Update folders to remove reference to this file
-    await Folder.updateMany(
-      { files: mongoose.Types.ObjectId(id) },
-      { $pull: { files: mongoose.Types.ObjectId(id) } }
+    const user = await User.findOneAndUpdate(
+      { username: username },
+      { profilePicture: profilePictureUrl },
+      { new: true }
     );
 
-    // Delete the file from the database
-    await File.findByIdAndDelete(id);
-
-    res.status(200).json({ message: 'File deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting file', error: error });
-  }
-}); */
-
-//Profile Pic Upload Endpoint
-app.post('/uploadProfilePicture', upload.single('profilePicture'), (req, res) => {
-  const username = req.body.username;
-  const profilePictureUrl = req.file.path;
-
-  User.findOneAndUpdate({ username: username }, { profilePicture: profilePictureUrl }, { new: true }, (err, user) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error updating profile picture', error: err });
-    }
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
     res.status(200).json({ message: 'Profile picture updated successfully', user });
-  });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating profile picture', error: error });
+  }
 });
+//Fetch Profile Pic Endpoint
+app.get('/getUserProfilePic/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const user = await User.findOne({ username: username });
+
+    if (user && user.profilePicture) {
+      const profilePicUrl = `http://localhost:5001/${user.profilePicture}`;
+      console.log(`Fetching profile picture URL: ${profilePicUrl}`); // Log the URL
+      res.json({ profilePicUrl });
+    } else {
+      res.status(404).send('User or profile picture not found');
+    }
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
 //get users endpoint
 app.get('/Users', async (req, res) => {
   try {
@@ -261,7 +270,7 @@ app.post('/Share', async (req, res) => {
     if (!updatedFolder) {
       res.status(404).json({ message: 'Folder Already Shared with Specified User' });
     } else {
-    res.status(200).json({ message: 'Share Success!' });
+      res.status(200).json({ message: 'Share Success!' });
     }
   } catch (error) {
     res.status(500).json({ message: 'Error sharing folder', error: error });
@@ -272,15 +281,15 @@ app.post('/Share', async (req, res) => {
 app.post('/EditNote', async (req, res) => {
   try {
     const { _id, name, content } = req.body;
-    
+
     const updatedNote = await Note.findByIdAndUpdate(_id, { name, content }, { new: true });
 
     if (!updatedNote) {
       return res.status(404).json({ message: 'Note not found' });
     }
-   
+
     res.status(200).json({ message: 'Note Edit Success!' });
-    
+
   } catch (error) {
     res.status(500).json({ message: 'Error editing note', error: error });
   }
