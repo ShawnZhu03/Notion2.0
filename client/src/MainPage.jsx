@@ -59,7 +59,7 @@ const MainPage = () => {
       <div className="page-body">
         <div className="content">
           <FileList selectedFolderId={selectedFolderId} />
-          <FileUpload onFileUpload={handleFileUploadSuccess} /> {/* Pass the callback */}
+          <FileUpload onFileUpload={handleFileUploadSuccess} selectedFolderId={selectedFolderId} />
           <ShareFolder folderId={selectedFolderId} />
           <NotesArea folderId={selectedFolderId}/> 
         </div>

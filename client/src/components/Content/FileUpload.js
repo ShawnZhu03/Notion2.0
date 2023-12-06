@@ -1,13 +1,17 @@
 import React from 'react';
 
-export default function FileUpload({ onFileUpload }) {
+export default function FileUpload({ onFileUpload, selectedFolderId }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
+
+    formData.append('folderId', selectedFolderId);
+
     const response = await fetch('http://localhost:5001/upload', {
       method: 'POST',
       body: formData,
     });
+
     if (response.ok) {
       alert('File uploaded');
       onFileUpload(); 
@@ -25,4 +29,5 @@ export default function FileUpload({ onFileUpload }) {
     </div>
   );
 }
+
 

@@ -162,23 +162,25 @@ app.get('/files', async (req, res) => {
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    const newFile = new File({
-      name: req.file.originalname, // Original name of the file
-      folder: [],
-      content: req.file.path // Path where the file is saved
+    const folderId = req.body.folderId; // Get folderId from the request
+    const newFile = new Note({
+      name: req.file.originalname,
+      folder: folderId, // Use folderId here
+      content: req.file.path
     });
     await newFile.save();
-    res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+    res.status(200). json({ message: 'File uploaded successfully', file: newFile });
   } catch (error) {
     res.status(500).json({ message: 'Error uploading file', error: error });
   }
 });
 
 
+
 //List File Endpoint
 app.get('/files', async (req, res) => {
   try {
-    const files = await File.find();
+    const files = await Note.find();
     const fileData = files.map(file => {
       return {
         ...file.toObject(),
