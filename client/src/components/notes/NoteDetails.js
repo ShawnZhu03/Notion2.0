@@ -7,7 +7,7 @@ function NoteDetails({ note }) {
   }
 
   return (
-    <div>
+    <div className='note'>
       <h2>{note.name}</h2>
       <p>{note.content}</p>
     </div>

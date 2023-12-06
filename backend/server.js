@@ -93,11 +93,11 @@ app.post('/login', async (req, res) => {
 
 // Fetch Folders Endpoint
 app.post('/MainPage', async (req, res) => {
-
   try {
     const { owner } = req.body;
     console.log(owner);
-    const folders = await Folder.find({ owner: owner });
+    const folders = await Folder.find({ owners: { $in: [owner] } });
+
     res.json(folders);
   } catch (error) {
     console.error('Error fetching folders:', error);
@@ -109,10 +109,8 @@ app.post('/MainPage', async (req, res) => {
 app.post('/AddFolder', async (req, res) => {
   try {
     const { folderName, owner } = req.body;
-    const newFolder = new Folder({ folderName, owner });
-    console.log(folderName);
-    console.log(newFolder);
-    console.log(owner);
+    const newFolder = new Folder({ folderName, owners: [owner] });
+    console.log(owner); 
 
     await newFolder.save();
     res.status(201).json({ message: 'Folder created successfully' });
@@ -191,7 +189,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
 
 
-
 //List File Endpoint
 app.get('/files', async (req, res) => {
   try {
@@ -253,8 +250,34 @@ app.post('/uploadProfilePicture', upload.single('profilePicture'), (req, res) =>
     res.status(200).json({ message: 'Profile picture updated successfully', user });
   });
 });
+//get users endpoint
+app.get('/Users', async (req, res) => {
+  try {
+    const users = await User.find().select('username')
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users', error: error });
+  }
+});
 
-
+//share folder endpoint
+app.post('/Share', async (req, res) => {
+  try {
+    const { folder, owner } = req.body;
+    const updatedFolder = await Folder.findOneAndUpdate(
+      { _id: folder },
+      { $addToSet: { owners: owner } },
+      { new: true }
+    );
+    if (!updatedFolder) {
+      res.status(404).json({ message: 'Folder Already Shared with Specified User' });
+    } else {
+    res.status(200).json({ message: 'Share Success!' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error sharing folder', error: error });
+  }
+});
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);

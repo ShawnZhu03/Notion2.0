@@ -4,6 +4,7 @@ import FileList from './components/Content/FileList';
 import FileUpload from './components/Content/FileUpload';
 import NotesArea from './components/notes/NotesArea';
 import './MainPage.scss';
+import ShareFolder from './components/Content/ShareFolder';
 
 const MainPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState(null);
@@ -23,23 +24,15 @@ const MainPage = () => {
       .then(data => setFolders(data))
       .catch(error => console.error('Error fetching folders:', error));
   };
-  
+  //render when new folder is added
   useEffect(() => {
     fetchFolders();
-  }, [username]);
+  }, []);
   
 
   const addNewFolderToList = (newFolder) => {
-    fetch('http://localhost:5001/AddFolder', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newFolder)
-    })
-      .then(response => response.json())
-      .then(data => {
-        fetchFolders(); 
-      })
-      .catch(error => console.error('Error adding folder:', error));
+    setFolders((prevFolders) => [...prevFolders, newFolder]);
+    fetchFolders();
   };
 
    return (
@@ -54,6 +47,7 @@ const MainPage = () => {
         <div className="content">
           <FileList selectedFolderId={selectedFolderId} />
           <FileUpload />
+          <ShareFolder folderId={selectedFolderId} />
           <NotesArea folderId={selectedFolderId}/> 
         </div>
       </div>

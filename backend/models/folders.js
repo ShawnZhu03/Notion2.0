@@ -10,10 +10,7 @@ const folderSchema = new Schema ({
         trim: true,
         minlength: 1
     },
-    owner: {
-        type: String,
-        required: true
-    }
+    owners: [String]
 });
 
 const Folder = mongoose.model('Folder', folderSchema);

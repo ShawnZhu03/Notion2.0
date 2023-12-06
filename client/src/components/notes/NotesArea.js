@@ -34,6 +34,7 @@ function NotesArea({ folderId }) {
         setNotes([...notes, addedNote]);
         setNoteTitle('');
         setNoteContent('');
+        fetchNotes(folderId);
       })
       .catch(error => console.error('Error adding note:', error));
   };
