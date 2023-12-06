@@ -9,7 +9,7 @@ import ShareFolder from './components/Content/ShareFolder';
 const MainPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState(null);
   const [folders, setFolders] = useState([]);
-  
+  const [refreshFileList, setRefreshFileList] = useState(false); // State to trigger refresh
 
   const username = localStorage.getItem("username");
 
@@ -24,18 +24,31 @@ const MainPage = () => {
       .then(data => setFolders(data))
       .catch(error => console.error('Error fetching folders:', error));
   };
-  //render when new folder is added
+  
   useEffect(() => {
     fetchFolders();
-  }, []);
+  }, [username]);
   
 
   const addNewFolderToList = (newFolder) => {
-    setFolders((prevFolders) => [...prevFolders, newFolder]);
-    fetchFolders();
+    fetch('http://localhost:5001/AddFolder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newFolder)
+    })
+      .then(response => response.json())
+      .then(data => {
+        fetchFolders(); 
+      })
+      .catch(error => console.error('Error adding folder:', error));
   };
 
-   return (
+  // Function to refresh file list
+  const handleFileUploadSuccess = () => {
+    setRefreshFileList(prevState => !prevState); // Toggle state to trigger useEffect
+  };
+
+  return (
     <div className="main-page">
       <Sidebar
         folders={folders}
@@ -46,7 +59,7 @@ const MainPage = () => {
       <div className="page-body">
         <div className="content">
           <FileList selectedFolderId={selectedFolderId} />
-          <FileUpload />
+          <FileUpload onFileUpload={handleFileUploadSuccess} /> {/* Pass the callback */}
           <ShareFolder folderId={selectedFolderId} />
           <NotesArea folderId={selectedFolderId}/> 
         </div>

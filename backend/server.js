@@ -9,41 +9,31 @@ const User = require('./models/users.js');
 const Folder = require('./models/folders.js');
 const Note = require('./models/notes.js')
 const File = require('./models/files.js');
-const fs = require('fs');
-const { GridFsStorage } = require('multer-gridfs-storage');
-
-
-
-require('dotenv').config();
 
 const port = 5001;
-const uri = process.env.ATLAS_URI;
 
-
-const storage = new GridFsStorage({
-  url: uri, 
-  options: { useNewUrlParser: true, useUnifiedTopology: true },
-  file: (req, file) => {
-    return {
-      bucketName: 'uploads', 
-      filename: file.originalname,
-    };
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
   },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); 
+  }
 });
-mongoose.connect(uri);
 
+const upload = multer({ storage: storage });
+
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+require('dotenv').config();
+const uri = process.env.ATLAS_URI;
+mongoose.connect(uri);
 const connection = mongoose.connection;
 connection.once('open', () => {
   console.log("mongoose databse connection established successfully");
 })
-const upload = multer({ storage: storage });
-
-app.use(express.json());
-app.use('/uploads', express.static('uploads'));
-app.use(cors());
-app.use(upload.single('file'));
-
-
 
 
 
@@ -172,21 +162,17 @@ app.get('/files', async (req, res) => {
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    //const newFile = new File({
-    //   name: req.file.originalname,
-    //   folder: req.body.folderId,
-    //   content: req.file.path
-    // });
-    // console.log(newFile);
-    // await newFile.save();
-
-    // console.log(res);
-    res.status(200).json({ message: 'File uploaded successfully', file: req.file });
+    const newFile = new File({
+      name: req.file.originalname, // Original name of the file
+      folder: [],
+      content: req.file.path // Path where the file is saved
+    });
+    await newFile.save();
+    res.status(200).json({ message: 'File uploaded successfully', file: newFile });
   } catch (error) {
     res.status(500).json({ message: 'Error uploading file', error: error });
   }
 });
-
 
 
 //List File Endpoint
@@ -206,7 +192,7 @@ app.get('/files', async (req, res) => {
 });
 
 //File Delete Endpoint
-app.delete('/files/:id', async (req, res) => {
+/*app.delete('/files/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const file = await File.findById(id);
@@ -233,12 +219,12 @@ app.delete('/files/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error deleting file', error: error });
   }
-});
+}); */
 
 //Profile Pic Upload Endpoint
 app.post('/uploadProfilePicture', upload.single('profilePicture'), (req, res) => {
-  const username = req.body.username; 
-  const profilePictureUrl = req.file.path; 
+  const username = req.body.username;
+  const profilePictureUrl = req.file.path;
 
   User.findOneAndUpdate({ username: username }, { profilePicture: profilePictureUrl }, { new: true }, (err, user) => {
     if (err) {
