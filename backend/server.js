@@ -265,6 +265,24 @@ app.post('/Share', async (req, res) => {
   }
 });
 
+//edit note endpoint
+app.post('/EditNote', async (req, res) => {
+  try {
+    const { _id, name, content } = req.body;
+    
+    const updatedNote = await Note.findByIdAndUpdate(_id, { name, content }, { new: true });
+
+    if (!updatedNote) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+   
+    res.status(200).json({ message: 'Note Edit Success!' });
+    
+  } catch (error) {
+    res.status(500).json({ message: 'Error editing note', error: error });
+  }
+});
+
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
 })

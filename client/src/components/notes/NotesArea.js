@@ -91,7 +91,7 @@ function NotesArea({ folderId }) {
         </div>
       ))}
 
-      <NoteDetails note={selectedNote} />
+      <NoteDetails note={selectedNote} fetchNotes = {fetchNotes} folderId = {folderId}/>
     </div>
   );
 }
