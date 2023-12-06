@@ -3,9 +3,8 @@ import Sidebar from './components/Sidebar/Sidebar';
 import FileList from './components/Content/FileList';
 import FileUpload from './components/Content/FileUpload';
 import NotesArea from './components/notes/NotesArea';
-import './MainPage.scss';
 import ShareFolder from './components/Content/ShareFolder';
-
+import './MainPage.css';
 const MainPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState(null);
   const [folders, setFolders] = useState([]);

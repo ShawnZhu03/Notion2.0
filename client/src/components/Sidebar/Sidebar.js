@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import '../../MainPage.css'
 function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
     const [newFolderName, setNewFolderName] = useState('');
     const username = localStorage.getItem("username");
@@ -52,11 +52,12 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
                 />
             </div>
             {folders.map(folder => (
-                <div
+                <div className='folder'
                     key={folder._id}
                     style={{
                         margin: '10px',
                         cursor: 'pointer',
+                        // display: 'inline-block',
                         backgroundColor: folder._id === selectedFolderId ? '#f0f0f0' : 'transparent',
                     }}
                     onClick={() => handleFolderClick(folder._id)}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginReg.css'
-
 import UserIcon from '../components/Assets/UserIcon.png'
 import PasswordIcon from '../components/Assets/PasswordIcon.png'
 import axios from 'axios'
