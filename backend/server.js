@@ -12,6 +12,10 @@ const File = require('./models/files.js');
 
 const port = 5001;
 
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -23,9 +27,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
 require('dotenv').config();
 const uri = process.env.ATLAS_URI;

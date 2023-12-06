@@ -1,7 +1,7 @@
 // NoteDetails.js
 import React, { useState, useEffect } from 'react';
 
-function NoteDetails({ note , fetchNotes, folderId, setNote }) {
+function NoteDetails({ note, fetchNotes, folderId, setNote }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -29,7 +29,7 @@ function NoteDetails({ note , fetchNotes, folderId, setNote }) {
   };
 
   const handleDelete = () => {
-    const DeleteNote = {_id: note._id};
+    const DeleteNote = { _id: note._id };
     console.log(DeleteNote);
     fetch('http://localhost:5001/DeleteNote', {
       method: 'POST',
@@ -40,7 +40,7 @@ function NoteDetails({ note , fetchNotes, folderId, setNote }) {
       .then(data => {
         alert(data.message);
         setNote(null);
-        fetchNotes(folderId)
+        fetchNotes(folderId);
       })
       .catch(error => console.error('Error deleting note:', error));
   };
@@ -58,18 +58,24 @@ function NoteDetails({ note , fetchNotes, folderId, setNote }) {
         placeholder='Note Title'
         className='note-title-input'
       />
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder='Note Content'
-        className='note-content-textarea'
-      />
+      {note.content.startsWith('uploads/') ? ( // Assuming '/uploads/' is the prefix for file notes
+        <a href={`http://localhost:5001${note.content}`} target="_blank" rel="noopener noreferrer">
+          View File
+        </a>
+      ) : (
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder='Note Content'
+          className='note-content-textarea'
+        />
+      )}
 
-      <button onClick = {handleEdit}>
+      <button onClick={handleEdit}>
         Save Changes
       </button>
 
-      <button onClick = {handleDelete}>
+      <button onClick={handleDelete}>
         Delete Note
       </button>
     </div>
