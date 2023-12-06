@@ -58,10 +58,11 @@ function NoteDetails({ note, fetchNotes, folderId, setNote }) {
         placeholder='Note Title'
         className='note-title-input'
       />
-      {note.content.startsWith('uploads/') ? ( // Assuming '/uploads/' is the prefix for file notes
-        <a href={`http://localhost:5001${note.content}`} target="_blank" rel="noopener noreferrer">
+      {note.content.includes('.') ? ( // Check if content has a file extension
+        <a href={`http://localhost:5001/${note.content}`} target="_blank" rel="noopener noreferrer">
           View File
         </a>
+
       ) : (
         <textarea
           value={content}

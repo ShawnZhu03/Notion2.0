@@ -160,21 +160,6 @@ app.post('/AddNote', async (req, res) => {
 });
 
 
-// Fetch Files by Folder ID Endpoint
-app.get('/files', async (req, res) => {
-  try {
-    const folderId = req.query.folderId;
-    if (!folderId) {
-      return res.status(400).json({ message: 'Folder ID is required' });
-    }
-
-    const files = await File.find({ folder: folderId });
-    res.json(files);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching files', error: error });
-  }
-});
-
 //File Upload Endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
@@ -230,6 +215,7 @@ app.post('/uploadProfilePicture', uploadProfilePic.single('profilePicture'), asy
     res.status(500).json({ message: 'Error updating profile picture', error: error });
   }
 });
+
 //Fetch Profile Pic Endpoint
 app.get('/getUserProfilePic/:username', async (req, res) => {
   try {
