@@ -8,7 +8,7 @@ function ShareFolder({ folderId }) {
 
   const handleShare = () => {
     const share = { folder: folderId, owner: shareWith };
-    fetch('http://localhost:5001/Share', {
+    fetch('http://localhost:5001/folders/Share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(share)
@@ -24,7 +24,7 @@ function ShareFolder({ folderId }) {
   };
 
   const fetchUsers = () => {
-    fetch('http://localhost:5001/Users', {
+    fetch('http://localhost:5001/users/Users', {
       method: 'GET',
     })
       .then(response => response.json())

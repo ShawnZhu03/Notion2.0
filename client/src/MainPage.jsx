@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar/Sidebar';
-import FileList from './components/Content/FileList';
-import FileUpload from './components/Content/FileUpload';
 import NotesArea from './components/notes/NotesArea';
 import ShareFolder from './components/Content/ShareFolder';
 import './MainPage.css';
@@ -14,7 +12,7 @@ const MainPage = () => {
 
   // Function to fetch folders
   const fetchFolders = () => {
-    fetch('http://localhost:5001/MainPage', {
+    fetch('http://localhost:5001/folders/MainPage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ owner: username })
@@ -30,7 +28,7 @@ const MainPage = () => {
   
 
   const addNewFolderToList = (newFolder) => {
-    fetch('http://localhost:5001/AddFolder', {
+    fetch('http://localhost:5001/folders/AddFolder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newFolder)
@@ -56,9 +54,9 @@ const MainPage = () => {
         onAddFolder={addNewFolderToList}
       />
       <div className="page-body">
+        <h2>Welcome {localStorage.getItem('username')}</h2>
+
         <div className="content">
-          <FileList selectedFolderId={selectedFolderId} />
-          <FileUpload onFileUpload={handleFileUploadSuccess} selectedFolderId={selectedFolderId} />
           <ShareFolder folderId={selectedFolderId} />
           <NotesArea folderId={selectedFolderId}/> 
         </div>

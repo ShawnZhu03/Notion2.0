@@ -6,7 +6,7 @@ export default function FileList({ selectedFolderId }) {
     useEffect(() => {
         const fetchFiles = async () => {
             try {
-                const response = await fetch('http://localhost:5001/files');
+                const response = await fetch('http://localhost:5001/notes/files');
                 const data = await response.json();
                 setFiles(data.filter(file => file.folderId === selectedFolderId)); // problem with data.filter 
             } catch (error) {
@@ -19,12 +19,13 @@ export default function FileList({ selectedFolderId }) {
     }, [selectedFolderId]); 
 
     const getFileUrl = (fileName) => {
-        return `http://localhost:5001/uploads/${fileName}`;
+        const url =  `http://localhost:5001/uploads/${fileName}`;
+        console.log(url);
+        return url;
     };
 
     return (
         <div>
-            <h2>Welcome {localStorage.getItem('username')}</h2>
             <ul>
                 {files.map(file => (
                     <li key={file._id}>

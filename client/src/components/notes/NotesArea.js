@@ -20,11 +20,31 @@ function NotesArea({ folderId }) {
     if (folderId === null) {
         return <></>
     }
+    
+    
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    console.log(formData);
+    formData.append('folderId', folderId);
 
+    const response = await fetch('http://localhost:5001/notes/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert('File uploaded');
+      fetchNotes(folderId); 
+    } else {
+      alert('Upload failed');
+    }
+  }
+    
   const handleAddNote = () => {
     const newNote = { name: noteTitle, folder: folderId, content: noteContent };
     console.log(newNote);
-    fetch('http://localhost:5001/AddNote', {
+    fetch('http://localhost:5001/notes/AddNote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newNote)
@@ -44,7 +64,7 @@ function NotesArea({ folderId }) {
   };
 
   const fetchNotes = (folderId) => {
-    fetch('http://localhost:5001/Notes', {
+    fetch('http://localhost:5001/notes/Notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ folder: folderId })
@@ -52,12 +72,21 @@ function NotesArea({ folderId }) {
       .then(response => response.json())
       .then(data => setNotes(data))
       .catch(error => console.error('Error fetching folders:', error));
+      
   };
 
   
 
   return (
+    
     <div className="note-container">
+        <div>
+          <form onSubmit={handleSubmit}>
+            <input type="file" name="file" />
+            <button type="submit">Upload</button>
+          </form>
+        </div>
+
       <input
         value={noteTitle}
         onChange={(e) => setNoteTitle(e.target.value)}

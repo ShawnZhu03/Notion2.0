@@ -13,15 +13,6 @@ const LoginReg = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    //synchronize input fields with component state
-    const handleUserN = (event) => {
-        setUsername(event.target.value);
-    }
-
-    //synchronize input fields with component state
-    const handlePassW = (event) => {
-        setPassword(event.target.value);
-    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -33,7 +24,7 @@ const LoginReg = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:5001${endpoint}`, requestOptions);
+            const response = await fetch(`http://localhost:5001/users/${endpoint}`, requestOptions);
             const data = await response.json();
             console.log(response);
 
@@ -43,6 +34,8 @@ const LoginReg = () => {
                 
             } else {
                 console.error('Error:', data.message);
+                alert("invalid username or password")
+
             }
         } catch (error) {
             console.error('Network error:', error);

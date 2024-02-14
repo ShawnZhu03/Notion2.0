@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import '../../MainPage.css'
+import { useNavigate } from 'react-router-dom';
+
 function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
+    const navigate = useNavigate();
     const [newFolderName, setNewFolderName] = useState('');
     const username = localStorage.getItem("username");
-    const [profilePicture, setProfilePicture] = useState(localStorage.getItem("profilePicture") || 'path/to/default/profile.png');
+    const [profilePicture, setProfilePicture] = useState('');
 
     useEffect(() => {
         fetchProfilePicture();
@@ -11,7 +14,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
 
     const fetchProfilePicture = async () => {
         try {
-            const response = await fetch(`http://localhost:5001/getUserProfilePic/${username}`);
+            const response = await fetch(`http://localhost:5001/users/getUserProfilePic/${username}`);
             console.log('Fetching profile picture for:', username); // Log username
             console.log('Response status:', response.status);
             if (response.ok) {
@@ -19,6 +22,8 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
                 console.log('Profile picture URL:', data.profilePicUrl); // Log profile picture URL
                 setProfilePicture(data.profilePicUrl);
                 localStorage.setItem("profilePicture", data.profilePicUrl);
+            } else {
+                
             }
         } catch (error) {
             console.error('Error fetching profile picture:', error);
@@ -38,7 +43,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
             owner: username
         };
 
-        fetch('http://localhost:5001/AddFolder', {
+        fetch('http://localhost:5001/folders/AddFolder', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,14 +68,14 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
             formData.append('username', username);
 
             try {
-                const response = await fetch('http://localhost:5001/uploadProfilePicture', {
+                const response = await fetch('http://localhost:5001/users/uploadProfilePicture', {
                     method: 'POST',
                     body: formData,
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    const uploadedProfilePicUrl = data.profilePictureUrl;
+                    const uploadedProfilePicUrl = data.profilePicture;
                     setProfilePicture(uploadedProfilePicUrl); 
                     localStorage.setItem("profilePicture", uploadedProfilePicUrl); 
                     alert('Profile picture uploaded successfully');
@@ -85,6 +90,11 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
         }
     };
 
+    const handleLogOut = () => {
+        navigate('/');
+        localStorage.setItem("username", null);
+
+    }
 
     return (
         <aside style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto' }}>
@@ -124,6 +134,10 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
                 />
                 <button type="submit">Add Folder</button>
             </form>
+
+            <button onClick={handleLogOut}>
+                Log Out
+            </button>
         </aside>
     );
 }

@@ -15,7 +15,7 @@ function NoteDetails({ note, fetchNotes, folderId, setNote }) {
 
   const handleEdit = () => {
     const edit = { _id: note._id, name: title, content: content };
-    fetch('http://localhost:5001/EditNote', {
+    fetch('http://localhost:5001/notes/EditNote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(edit)
@@ -31,7 +31,7 @@ function NoteDetails({ note, fetchNotes, folderId, setNote }) {
   const handleDelete = () => {
     const DeleteNote = { _id: note._id };
     console.log(DeleteNote);
-    fetch('http://localhost:5001/DeleteNote', {
+    fetch('http://localhost:5001/notes/DeleteNote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(DeleteNote)
