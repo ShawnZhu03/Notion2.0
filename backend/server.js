@@ -4,6 +4,8 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
 const folderRoutes = require("./routes/folderRoutes.js")
 const noteRoutes = require("./routes/noteRoutes.js")
 const userRoutes = require("./routes/usersRoutes.js")
