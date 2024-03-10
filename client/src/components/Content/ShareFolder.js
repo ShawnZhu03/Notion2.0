@@ -8,7 +8,7 @@ function ShareFolder({ folderId }) {
 
   const handleShare = () => {
     const share = { folder: folderId, owner: shareWith };
-    fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/folders/Share', {
+    fetch('https://notion2-0-gpts.vercel.app/folders/Share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(share)
@@ -24,7 +24,7 @@ function ShareFolder({ folderId }) {
   };
 
   const fetchUsers = () => {
-    fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/users/Users', {
+    fetch('https://notion2-0-gpts.vercel.app/users/Users', {
       method: 'GET',
     })
       .then(response => response.json())

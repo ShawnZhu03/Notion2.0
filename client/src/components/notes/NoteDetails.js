@@ -15,7 +15,7 @@ function NoteDetails({ note, fetchNotes, folderId, setNote }) {
 
   const handleEdit = () => {
     const edit = { _id: note._id, name: title, content: content };
-    fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/notes/EditNote', {
+    fetch('https://notion2-0-gpts.vercel.app/notes/EditNote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(edit)
@@ -31,7 +31,7 @@ function NoteDetails({ note, fetchNotes, folderId, setNote }) {
   const handleDelete = () => {
     const DeleteNote = { _id: note._id };
     console.log(DeleteNote);
-    fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/notes/DeleteNote', {
+    fetch('https://notion2-0-gpts.vercel.app/notes/DeleteNote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(DeleteNote)
@@ -59,7 +59,7 @@ function NoteDetails({ note, fetchNotes, folderId, setNote }) {
         className='note-title-input'
       />
       {note.content.includes('.') ? ( // Check if content has a file extension
-        <a href={`https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/${note.content}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://notion2-0-gpts.vercel.app/${note.content}`} target="_blank" rel="noopener noreferrer">
           View File
         </a>
 

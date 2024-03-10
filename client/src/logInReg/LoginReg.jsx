@@ -24,7 +24,7 @@ const LoginReg = () => {
         };
 
         try {
-            const response = await fetch(`https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/users/${endpoint}`, requestOptions);
+            const response = await fetch(`https://notion2-0-gpts.vercel.app/users/${endpoint}`, requestOptions);
             const data = await response.json();
             console.log(response);
 

@@ -14,7 +14,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
 
     const fetchProfilePicture = async () => {
         try {
-            const response = await fetch(`https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/users/getUserProfilePic/${username}`);
+            const response = await fetch(`https://notion2-0-gpts.vercel.app/users/getUserProfilePic/${username}`);
             console.log('Fetching profile picture for:', username); // Log username
             console.log('Response status:', response.status);
             if (response.ok) {
@@ -43,7 +43,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
             owner: username
         };
 
-        fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/folders/AddFolder', {
+        fetch('https://notion2-0-gpts.vercel.app/folders/AddFolder', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ function Sidebar({ onFolderSelect, onAddFolder, folders, selectedFolderId }) {
             formData.append('username', username);
 
             try {
-                const response = await fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/users/uploadProfilePicture', {
+                const response = await fetch('https://notion2-0-gpts.vercel.app/users/uploadProfilePicture', {
                     method: 'POST',
                     body: formData,
                 });
