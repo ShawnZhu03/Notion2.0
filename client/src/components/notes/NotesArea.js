@@ -28,7 +28,7 @@ function NotesArea({ folderId }) {
     console.log(formData);
     formData.append('folderId', folderId);
 
-    const response = await fetch('http://localhost:5001/notes/upload', {
+    const response = await fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/notes/upload', {
       method: 'POST',
       body: formData,
     });
@@ -44,7 +44,7 @@ function NotesArea({ folderId }) {
   const handleAddNote = () => {
     const newNote = { name: noteTitle, folder: folderId, content: noteContent };
     console.log(newNote);
-    fetch('http://localhost:5001/notes/AddNote', {
+    fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/notes/AddNote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newNote)
@@ -64,7 +64,7 @@ function NotesArea({ folderId }) {
   };
 
   const fetchNotes = (folderId) => {
-    fetch('http://localhost:5001/notes/Notes', {
+    fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/notes/Notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ folder: folderId })

@@ -6,7 +6,7 @@ export default function FileList({ selectedFolderId }) {
     useEffect(() => {
         const fetchFiles = async () => {
             try {
-                const response = await fetch('http://localhost:5001/notes/files');
+                const response = await fetch('https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/notes/files');
                 const data = await response.json();
                 setFiles(data.filter(file => file.folderId === selectedFolderId)); // problem with data.filter 
             } catch (error) {
@@ -19,7 +19,7 @@ export default function FileList({ selectedFolderId }) {
     }, [selectedFolderId]); 
 
     const getFileUrl = (fileName) => {
-        const url =  `http://localhost:5001/uploads/${fileName}`;
+        const url =  'https://notion2-0-gpts-ei59m8mvc-shawnzhu03s-projects.vercel.app/uploads/${fileName}';
         console.log(url);
         return url;
     };
