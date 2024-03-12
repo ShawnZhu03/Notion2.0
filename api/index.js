@@ -13,9 +13,12 @@ const userRoutes = require("./routes/usersRoutes.js")
 require('dotenv').config();
 
 
-const port = 5001;
-
-app.use(cors());
+const port = process.env.PORT || 5001;
+const corsOptions = {
+  origin: ["https://notion2-0-gpts.vercel.app/"],
+  methods: ["POST", "GET"]
+}
+app.use(cors(corsOptions));
 app.use(express.json());
 
 
