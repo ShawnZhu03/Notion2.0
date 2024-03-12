@@ -14,7 +14,7 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5001;
 const corsOptions = {
-  origin: ["https://notion2-0-gpts.vercel.app"],
+  origin: ["https://notion2-0.vercel.app"],
   methods: ["POST", "GET"],
 };
 app.use(cors(corsOptions));
