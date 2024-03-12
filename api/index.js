@@ -1,45 +1,40 @@
 //server
-const express = require('express');
+const express = require("express");
 const app = express();
-const mongoose = require('mongoose');
-const cors = require('cors');
+const mongoose = require("mongoose");
+const cors = require("cors");
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
-const folderRoutes = require("./routes/folderRoutes.js")
-const noteRoutes = require("./routes/noteRoutes.js")
-const userRoutes = require("./routes/usersRoutes.js")
+const folderRoutes = require("./routes/folderRoutes.js");
+const noteRoutes = require("./routes/noteRoutes.js");
+const userRoutes = require("./routes/usersRoutes.js");
 
-require('dotenv').config();
+require("dotenv").config();
 
-
-const port = 5001;
-
-app.use(cors());
+const port = process.env.PORT || 5001;
+const corsOptions = {
+  origin: ["https://notion2-0-gpts.vercel.app"],
+  methods: ["POST", "GET"],
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
-
-
-app.use('/folders', folderRoutes);
-app.use('/users', userRoutes);
-app.use('/notes', noteRoutes);
-app.use('/uploads', express.static(__dirname +'/uploads'));
-
-
-
+app.use("/folders", folderRoutes);
+app.use("/users", userRoutes);
+app.use("/notes", noteRoutes);
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri);
 const connection = mongoose.connection;
-connection.once('open', () => {
+connection.once("open", () => {
   console.log("mongoose databse connection established successfully");
-})
-
-
+});
 
 app.listen(port, () => {
   console.log(`server is running on: ${port}`);
-})
+});
 
 console.log("hello");
 
