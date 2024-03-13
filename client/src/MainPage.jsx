@@ -12,7 +12,7 @@ const MainPage = () => {
 
   // Function to fetch folders
   const fetchFolders = () => {
-    fetch('http://localhost:5001/folders/MainPage', {
+    fetch('https://notion2-0-gpts.vercel.app/folders/MainPage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ owner: username })
@@ -28,7 +28,7 @@ const MainPage = () => {
   
 
   const addNewFolderToList = (newFolder) => {
-    fetch('http://localhost:5001/folders/AddFolder', {
+    fetch('https://notion2-0-gpts.vercel.app/folders/AddFolder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newFolder)
